@@ -56,10 +56,10 @@
         "virtualNetworkName": "vnet01",
         "publicIPAddressName": "myPublicIP",
         "scriptFileName": "setup-server.ps1",
-        "nvidiaDriverSetupName": "369.95_win8_win7_64bit_international-1019205-02.zip",
+        "nvidiaDriverSetupName": "370.12_grid_win8_win7_server2012R2_server2008R2_64bit_international.exe",
         "nvidiaDriverCert": "nvidia.cer",
         "assetStorageUrl": "[concat('https://', parameters('assetStorageAccountName'), '.blob.core.windows.net', '/', parameters('assetStorageContainer'), '/')]",
-        "scriptParameters": "[concat('-nvidiaDriverSetupPath', ' ', variables('nvidiaDriverSetupName'), ' ', '-nvidiaDriverCertPath', ' ', variables('nvidiaDriverCert'))]"
+        "scriptParameters": "[concat('-nvidiaDriverSetupPath', ' ', variables('nvidiaDriverSetupName'))]"
     },
     "resources": [
         {
@@ -174,8 +174,7 @@
                         "settings": {
                             "fileUris": [
                                 "[concat(variables('assetStorageUrl'), variables('scriptFileName'))]",
-                                "[concat(variables('assetStorageUrl'), variables('nvidiaDriverSetupName'))]",
-                                "[concat(variables('assetStorageUrl'), variables('nvidiaDriverCert'))]"
+                                "[concat(variables('assetStorageUrl'), variables('nvidiaDriverSetupName'))]"
                             ]
                         },
                         "protectedSettings": {

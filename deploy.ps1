@@ -31,8 +31,7 @@ New-AzureStorageContainer -Name $storageContainerName -Context $storageAccount.C
 
 # Upload the assets to storage
 # NOTE: Uploading a ~280MB blob can take several minutes (depending on upload speeds).
-Set-AzureStorageBlobContent -Container $storageContainerName -File ".\assets\369.95_win8_win7_64bit_international-1019205-02.zip" -Context $storageAccount.Context -Force 
-Set-AzureStorageBlobContent -Container $storageContainerName -File ".\assets\nvidia.cer" -Context $storageAccount.Context -Force
+Set-AzureStorageBlobContent -Container $storageContainerName -File ".\assets\370.12_grid_win8_win7_server2012R2_server2008R2_64bit_international.exe" -Context $storageAccount.Context -Force 
 Set-AzureStorageBlobContent -Container $storageContainerName -File ".\assets\setup-server.ps1" -Context $storageAccount.Context -Force
 
 
@@ -55,6 +54,5 @@ New-AzureRmResourceGroupDeployment -Name $deployName `
     -TemplateFile '.\azuredeploy.json' `
     -TemplateParameterFile '.\azuredeploy.parameters.json' `
     -assetStorageAccountName $storageAccountName `
-    -Verbose `
-    -DeploymentDebugLogLevel All
+    -Verbose 
     
