@@ -16,28 +16,24 @@ function Unzip {
 
 # ----- Create a local directory for the files -----
 $appsDir = "C:\assets\"
-New-Item -Path $appsDir -ItemType directory
+
+if (!(Test-Path -Path $appsDir)) {
+    New-Item -Path $appsDir -ItemType directory -Force
+}
 
 
-# ----- Setup NVidia drivers -----
+# ----- Unzip the NVidia driver file to the local path.
+$localDriverPath = $appsDir + $nvidiaDriverSetupPath.Substring(0, $nvidiaDriverSetupPath.LastIndexOf('.'))
+Unzip $nvidiaDriverSetupPath $localDriverPath
 
-# Copy driver file to the local directory (c:\assets\nvidia....\)
-$driverPath = $appsDir + $nvidiaDriverSetupPath.Substring(0, $nvidiaDriverSetupPath.LastIndexOf('.'))
-Copy-Item $nvidiaDriverSetupPath $appsDir
-Unzip $appsDir$nvidiaDriverSetupPath $driverPath
+# ----- Install the NVidia certificate in the VM's TrustedPublisher store.
+certutil.exe -f -addstore "TrustedPublisher" $nvidiaDriverCertPath
 
-# Install the NVidia cert
-Copy-Item $nvidiaDriverCertPath $appsDir
-certutil.exe -f -addstore "TrustedPublisher" $appsDir$nvidiaDriverCertPath
+# ----- Silent install of NVidia driver -----
+& $localDriverPath\setup.exe -s -noreboot -clean 
 
-# Silent install of NVidia driver
-#& $driverPath\setup.exe -noreboot -clean -noeula -nofinish -passive
-& $driverPath\setup.exe -s -noreboot -clean 
-
-# Sleep to allow the setup program to finish.
+# ----- Sleep to allow the setup program to finish. -----
 Start-Sleep -Seconds 120
 
-# NVidia driver installation requires a reboot.
+# ----- NVidia driver installation requires a reboot. -----
 Restart-Computer -Force
-
-

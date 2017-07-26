@@ -30,28 +30,22 @@ $storageAccount = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupNam
 New-AzureStorageContainer -Name $storageContainerName -Context $storageAccount.Context
 
 # Upload the assets to storage
+# NOTE: Uploading a ~280MB blob can take several minutes (depending on upload speeds).
 Set-AzureStorageBlobContent -Container $storageContainerName -File ".\assets\369.95_win8_win7_64bit_international-1019205-02.zip" -Context $storageAccount.Context -Force 
 Set-AzureStorageBlobContent -Container $storageContainerName -File ".\assets\nvidia.cer" -Context $storageAccount.Context -Force
 Set-AzureStorageBlobContent -Container $storageContainerName -File ".\assets\setup-server.ps1" -Context $storageAccount.Context -Force
 
-# Generate the value for artifacts location SAS token
-$artifactsLocationSasToken = New-AzureStorageContainerSASToken -Container $storageContainerName -Context $storageAccount.Context -Permission lr -ExpiryTime (Get-Date).AddHours(1)
-$artifactsLocationSasToken = ConvertTo-SecureString $artifactsLocationSasToken -AsPlainText -Force
-
-$artifactsLocation = $storageAccount.PrimaryEndpoints.Blob + $StorageContainerName
 
 $deployName = 'deploy-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')
 
-
-# $DebugPreference = Continue
 
 <#
 Test-AzureRmResourceGroupDeployment `
     -ResourceGroupName $ResourceGroupName `
     -TemplateFile '.\azuredeploy.json' `
     -TemplateParameterFile '.\azuredeploy.parameters.json' `
-    -_artifactsLocation $artifactsLocation `
-    -_artifactsLocationSasToken $artifactsLocationSasToken `
+    -scriptStorageAccountName $storageAccountName `
+    -scriptStorageAccountKey $storageAccountKey `
     -Verbose
 #>
 
@@ -60,8 +54,7 @@ New-AzureRmResourceGroupDeployment -Name $deployName `
     -ResourceGroupName $ResourceGroupName `
     -TemplateFile '.\azuredeploy.json' `
     -TemplateParameterFile '.\azuredeploy.parameters.json' `
-    -_artifactsLocation $ArtifactsLocation `
-    -_artifactsLocationSasToken $ArtifactsLocationSasToken `
+    -assetStorageAccountName $storageAccountName `
     -Verbose `
     -DeploymentDebugLogLevel All
-
+    

@@ -30,18 +30,20 @@
             ],
             "defaultValue": "Standard_NV6"
         },
-        "_artifactsLocationSasToken": {
-            "type": "securestring",
-            "metadata": {
-                "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
-            }
+        "dnsNameForPublicIP": {
+            "type": "string"
         },
-        "_artifactsLocation": {
+        "assetStorageAccountName": {
             "type": "string",
             "metadata": {
-                "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
-            },
-            "defaultValue": ""
+                "description": ""
+            }
+        },
+        "assetStorageContainer": {
+            "type": "string",
+            "metadata": {
+                "description": ""
+            }
         }
     },
     "variables": {
@@ -53,11 +55,11 @@
         "vmName": "myVM",
         "virtualNetworkName": "vnet01",
         "publicIPAddressName": "myPublicIP",
-        "dnsNameForPublicIP": "[uniqueString(resourceGroup().id)]",
         "scriptFileName": "setup-server.ps1",
         "nvidiaDriverSetupName": "369.95_win8_win7_64bit_international-1019205-02.zip",
         "nvidiaDriverCert": "nvidia.cer",
-        "scriptParameters": "[concat('-nvidiaDriverSetupPath ', variables('nvidiaDriverSetupName'), ' ', '-nvidiaDriverCertPath ', variables('nvidiaDriverCert'))]"
+        "assetStorageUrl": "[concat('https://', parameters('assetStorageAccountName'), '.blob.core.windows.net', '/', parameters('assetStorageContainer'), '/')]",
+        "scriptParameters": "[concat('-nvidiaDriverSetupPath', ' ', variables('nvidiaDriverSetupName'), ' ', '-nvidiaDriverCertPath', ' ', variables('nvidiaDriverCert'))]"
     },
     "resources": [
         {
@@ -68,7 +70,7 @@
             "properties": {
                 "publicIPAllocationMethod": "Dynamic",
                 "dnsSettings": {
-                    "domainNameLabel": "[variables('dnsNameForPublicIP')]"
+                    "domainNameLabel": "[parameters('dnsNameForPublicIP')]"
                 }
             }
         },
@@ -171,11 +173,15 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                             "fileUris": [
-                                "[concat(parameters('_artifactsLocation'), '/', variables('scriptFileName'), parameters('_artifactsLocationSasToken'))]",
-                                "[concat(parameters('_artifactsLocation'), '/', variables('nvidiaDriverSetupName'), parameters('_artifactsLocationSasToken'))]",
-                                "[concat(parameters('_artifactsLocation'), '/', variables('nvidiaDriverCert'), parameters('_artifactsLocationSasToken'))]"
-                            ],
-                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptFileName'), ' ', variables('scriptParameters'))]"
+                                "[concat(variables('assetStorageUrl'), variables('scriptFileName'))]",
+                                "[concat(variables('assetStorageUrl'), variables('nvidiaDriverSetupName'))]",
+                                "[concat(variables('assetStorageUrl'), variables('nvidiaDriverCert'))]"
+                            ]
+                        },
+                        "protectedSettings": {
+                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptFileName'), ' ', variables('scriptParameters'))]",
+                            "storageAccountName": "[parameters('assetStorageAccountName')]",
+                            "storageAccountKey": "[listKeys(concat('Microsoft.Storage/storageAccounts/', parameters('assetStorageAccountName')), '2015-06-15').key1]"
                         }
                     }
                 }
