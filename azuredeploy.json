@@ -57,7 +57,6 @@
         "publicIPAddressName": "myPublicIP",
         "scriptFileName": "setup-server.ps1",
         "nvidiaDriverSetupName": "370.12_grid_win8_win7_server2012R2_server2008R2_64bit_international.exe",
-        "nvidiaDriverCert": "nvidia.cer",
         "assetStorageUrl": "[concat('https://', parameters('assetStorageAccountName'), '.blob.core.windows.net', '/', parameters('assetStorageContainer'), '/')]",
         "scriptParameters": "[concat('-nvidiaDriverSetupPath', ' ', variables('nvidiaDriverSetupName'))]"
     },
