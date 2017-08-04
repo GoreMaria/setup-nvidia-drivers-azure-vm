@@ -1,4 +1,4 @@
-The repository contains the assets to accompany the blog post at http://michaelscollier.com/
+The repository contains the assets to accompany the blog post at [http://michaelscollier.com/](https://michaelcollier.wordpress.com/2017/08/04/how-to-setup-nvidia-driver-on-nv-series-azure-vm).
 
 Be sure to use obtain the NVIDIA driver setup file from [Set up GPU drivers for N-series VMs running Windows Server](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/n-series-driver-setup). Save the file to your the 'assets' directory.
 
